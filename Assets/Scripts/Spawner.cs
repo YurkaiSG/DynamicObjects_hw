@@ -70,15 +70,15 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private void ReleaseOnCollide(GameObject gameObject)
+    private void ReleaseOnCollide(Cube cube)
     {
-        StartCoroutine(Release(gameObject));
+        StartCoroutine(Release(cube));
     }
 
-    private IEnumerator Release(GameObject gameObject)
+    private IEnumerator Release(Cube cube)
     {
         WaitForSeconds delay = new WaitForSeconds(Random.Range(_minReleaseDelay, _maxReleaseDelay + 1));
         yield return delay;
-        _pool.Release(gameObject);
+        _pool.Release(cube.gameObject);
     }
 }

@@ -11,4 +11,11 @@ public class ColorChanger : MonoBehaviour
     {
         renderer.material.color = color;
     }
+
+    public void ChangeAlpha(Renderer renderer, float targetAlphaValue)
+    {
+        Color color = renderer.material.color;
+        color.a = targetAlphaValue;
+        renderer.material.color = color;
+    }
 }

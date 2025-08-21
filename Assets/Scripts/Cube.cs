@@ -1,25 +1,20 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(ColorChanger))]
-public class Cube : MonoBehaviour
+[RequireComponent(typeof(ColorChanger))]
+public class Cube : SpawnableObject
 {
-    private Rigidbody _rigidbody;
-    private Renderer _renderer;
     private ColorChanger _colorChanger;
     private Color _baseColor;
     private bool _isCollided = false;
 
-    public Rigidbody Rigidbody => _rigidbody;
-    public Renderer Renderer => _renderer;
     public event Action<Cube> Collided;
+    public event Action<Vector3> Destroyed;
 
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _renderer = GetComponent<Renderer>();
         _colorChanger = GetComponent<ColorChanger>();
-        _baseColor = _renderer.material.color;
+        _baseColor = Renderer.material.color;
         gameObject.SetActive(false);
     }
 
@@ -30,7 +25,7 @@ public class Cube : MonoBehaviour
 
     private void OnDisable()
     {
-        _colorChanger.Change(_renderer, _baseColor);
+        _colorChanger.Change(Renderer, _baseColor);
     }
 
     private void OnCollisionEnter(Collision other)
@@ -40,7 +35,7 @@ public class Cube : MonoBehaviour
             if (_isCollided == false)
             {
                 _isCollided = true;
-                _colorChanger.Change(_renderer);
+                _colorChanger.Change(Renderer);
                 Collided.Invoke(this);
             }
         }

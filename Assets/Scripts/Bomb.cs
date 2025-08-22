@@ -1,14 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(ColorChanger))]
+[RequireComponent(typeof(ColorChanger), typeof(Exploder))]
 public class Bomb : SpawnableObject
 {
     [SerializeField] private int _minFadeTimeValue = 2;
     [SerializeField] private int _maxFadeTimeValue = 5;
     [SerializeField] private float _interval = 0.1f;
-    [SerializeField] private float _explosionForce = 80f;
-    [SerializeField] private float _explosionRadius = 10f;
+    private Exploder _exploder;
     private ColorChanger _colorChanger;
 
     public int MinFadeTimeValue => _minFadeTimeValue;
@@ -18,6 +17,7 @@ public class Bomb : SpawnableObject
     {
         Rigidbody = GetComponent<Rigidbody>();
         Renderer = GetComponent<Renderer>();
+        _exploder = GetComponent<Exploder>();
         _colorChanger = GetComponent<ColorChanger>();
     }
 
@@ -28,11 +28,7 @@ public class Bomb : SpawnableObject
 
     public void Explode()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, _explosionRadius);
-
-        foreach (Collider hit in hits)
-            if (hit.TryGetComponent(out SpawnableObject spawnedObject))
-                spawnedObject.Rigidbody.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
+        _exploder.Explode();
     }
 
     public IEnumerator FadeOutSmoothly(float fadeTime)

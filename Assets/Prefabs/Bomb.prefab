@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1693516866655313906}
   - component: {fileID: 7191490033901681372}
   - component: {fileID: 4204366293045343906}
+  - component: {fileID: 2814510615155953003}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -150,8 +151,6 @@ MonoBehaviour:
   _minFadeTimeValue: 2
   _maxFadeTimeValue: 5
   _interval: 0.1
-  _explosionForce: 300
-  _explosionRadius: 10
 --- !u!114 &4204366293045343906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,3 +163,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0734cc1a3aab94eab0b40a69d63b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2814510615155953003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547179956829266234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2ec989d1f065f841a4b10835952c8cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _explosionRadius: 30
+  _explosionForce: 300

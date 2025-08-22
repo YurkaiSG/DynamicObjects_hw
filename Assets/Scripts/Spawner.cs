@@ -2,85 +2,77 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
-[RequireComponent(typeof(Collider))]
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameObject _prefab;
-    [SerializeField] private float _spawnDelay = 0.5f;
-    [SerializeField] private int _minReleaseDelay = 2;
-    [SerializeField] private int _maxReleaseDelay = 5;
-    [SerializeField] private int _poolCapacity = 30;
-    [SerializeField] private int _poolMaxSize = 100;
-    private ObjectPool<Cube> _pool;
-    private Collider _collider;
-    private Bounds _bounds;
+    [SerializeField] protected SpawnableObject Prefab;
+    [SerializeField] protected float SpawnDelay = 0.5f;
+    [SerializeField] protected int MinReleaseDelay = 2;
+    [SerializeField] protected int MaxReleaseDelay = 5;
+    [SerializeField] protected int PoolCapacity = 30;
+    [SerializeField] protected int PoolMaxSize = 100;
+    protected ObjectPool<SpawnableObject> Pool;
 
     private void Awake()
     {
-        _collider = GetComponent<Collider>();
-        _bounds = _collider.bounds;
-        _pool = new ObjectPool<Cube>(
+        Init();
+    }
+
+    protected virtual SpawnableObject CreateFunc()
+    {
+        GameObject pooledObject = Instantiate(Prefab.gameObject);
+        pooledObject.TryGetComponent(out SpawnableObject spawnedObject);
+        return spawnedObject;
+    }
+
+    protected virtual void ActionOnGet(SpawnableObject spawnedObject)
+    {
+        spawnedObject.transform.position = transform.position;
+        spawnedObject.transform.rotation = Quaternion.identity;
+        spawnedObject.gameObject.SetActive(true);
+
+        StartCoroutine(Release(spawnedObject));
+    }
+
+    protected virtual void ActionOnRelease(SpawnableObject spawnedObject)
+    {
+        spawnedObject.gameObject.SetActive(false);
+        spawnedObject.transform.rotation = Quaternion.identity;
+        spawnedObject.Rigidbody.velocity = Vector3.zero;
+    }
+
+    protected void Init()
+    {
+        Pool = new ObjectPool<SpawnableObject>(
             createFunc: () => CreateFunc(),
             actionOnGet: (obj) => ActionOnGet(obj),
             actionOnRelease: (obj) => ActionOnRelease(obj),
             actionOnDestroy: (obj) => Destroy(obj),
             collectionCheck: true,
-            defaultCapacity: _poolCapacity,
-            maxSize: _poolMaxSize
+            defaultCapacity: PoolCapacity,
+            maxSize: PoolMaxSize
         );
+    }
 
+    protected virtual void InitiateSpawn()
+    {
         StartCoroutine(SpawnObject());
     }
 
-    private Cube CreateFunc()
+    protected virtual IEnumerator SpawnObject()
     {
-        GameObject pooledObject = Instantiate(_prefab);
-        pooledObject.TryGetComponent(out Cube cube);
-        return cube;
-    }
-
-    private void ActionOnGet(Cube cube)
-    {
-        Vector3 spawnPosition = new Vector3(
-            Random.Range(_bounds.min.x, _bounds.max.x),
-            Random.Range(_bounds.min.y, _bounds.max.y),
-            Random.Range(_bounds.min.z, _bounds.max.z));
-
-        cube.Collided += ReleaseOnCollide;
-
-        cube.transform.position = spawnPosition;
-        cube.transform.rotation = Quaternion.identity;
-        cube.gameObject.SetActive(true);
-    }
-
-    private void ActionOnRelease(Cube cube)
-    {
-        cube.gameObject.SetActive(false);
-        cube.transform.rotation = Quaternion.identity;
-        cube.Rigidbody.velocity = Vector3.zero;
-        cube.Collided -= ReleaseOnCollide;
-    }
-
-    private IEnumerator SpawnObject()
-    {
-        WaitForSeconds wait = new WaitForSeconds(_spawnDelay);
+        WaitForSeconds wait = new WaitForSeconds(SpawnDelay);
 
         while (enabled)
         {
-            _pool.Get();
+            Pool.Get();
             yield return wait;
         }
-    }
+    }   
 
-    private void ReleaseOnCollide(Cube cube)
+    protected virtual IEnumerator Release(SpawnableObject spawnedObject)
     {
-        StartCoroutine(Release(cube));
-    }
-
-    private IEnumerator Release(Cube cube)
-    {
-        WaitForSeconds delay = new WaitForSeconds(Random.Range(_minReleaseDelay, _maxReleaseDelay + 1));
+        WaitForSeconds delay = new WaitForSeconds(Random.Range(MinReleaseDelay, MaxReleaseDelay + 1));
         yield return delay;
-        _pool.Release(cube);
+        Pool.Release(spawnedObject);
     }
 }

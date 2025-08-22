@@ -9,10 +9,11 @@ public class Cube : SpawnableObject
     private bool _isCollided = false;
 
     public event Action<Cube> Collided;
-    public event Action<Vector3> Destroyed;
 
     private void Awake()
     {
+        Rigidbody = GetComponent<Rigidbody>();
+        Renderer = GetComponent<Renderer>();
         _colorChanger = GetComponent<ColorChanger>();
         _baseColor = Renderer.material.color;
         gameObject.SetActive(false);
@@ -30,13 +31,13 @@ public class Cube : SpawnableObject
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.TryGetComponent(out Cube _) == false)
+        if (other.gameObject.TryGetComponent(out Cube _) == false && other.gameObject.TryGetComponent(out Bomb _) == false)
         {
             if (_isCollided == false)
             {
                 _isCollided = true;
                 _colorChanger.Change(Renderer);
-                Collided.Invoke(this);
+                Collided?.Invoke(this);
             }
         }
     }

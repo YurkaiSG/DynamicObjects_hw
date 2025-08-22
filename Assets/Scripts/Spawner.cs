@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class Spawner : MonoBehaviour
+public abstract class Spawner : MonoBehaviour
 {
     [SerializeField] protected SpawnableObject Prefab;
     [SerializeField] protected float SpawnDelay = 0.5f;
@@ -11,6 +12,10 @@ public class Spawner : MonoBehaviour
     [SerializeField] protected int PoolCapacity = 30;
     [SerializeField] protected int PoolMaxSize = 100;
     protected ObjectPool<SpawnableObject> Pool;
+
+    public abstract event Action Spawned;
+    public abstract event Action Created;
+    public abstract event Action<int> Active;
 
     private void Awake()
     {
@@ -71,7 +76,7 @@ public class Spawner : MonoBehaviour
 
     protected virtual IEnumerator Release(SpawnableObject spawnedObject)
     {
-        WaitForSeconds delay = new WaitForSeconds(Random.Range(MinReleaseDelay, MaxReleaseDelay + 1));
+        WaitForSeconds delay = new WaitForSeconds(UnityEngine.Random.Range(MinReleaseDelay, MaxReleaseDelay + 1));
         yield return delay;
         Pool.Release(spawnedObject);
     }

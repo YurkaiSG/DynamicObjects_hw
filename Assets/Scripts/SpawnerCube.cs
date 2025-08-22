@@ -9,6 +9,9 @@ public class SpawnerCube : Spawner
     private Bounds _bounds;
 
     public event Action<Vector3> Released;
+    public override event Action Spawned;
+    public override event Action Created;
+    public override event Action<int> Active;
 
     private void Awake()
     {
@@ -26,6 +29,7 @@ public class SpawnerCube : Spawner
     {
         GameObject pooledObject = Instantiate(Prefab.gameObject);
         pooledObject.TryGetComponent(out Cube cube);
+        Created?.Invoke();
         return cube;
     }
 
@@ -42,6 +46,8 @@ public class SpawnerCube : Spawner
         spawnedObject.transform.position = spawnPosition;
         spawnedObject.transform.rotation = Quaternion.identity;
         spawnedObject.gameObject.SetActive(true);
+        Spawned?.Invoke();
+        Active?.Invoke(Pool.CountActive);
     }
 
     protected override void ActionOnRelease(SpawnableObject spawnedObject)
@@ -50,6 +56,8 @@ public class SpawnerCube : Spawner
 
         if (spawnedObject.TryGetComponent(out Cube cube))
             cube.Collided -= ReleaseOnCollide;
+
+        Active?.Invoke(Pool.CountActive);
     }
 
     private void ReleaseOnCollide(Cube cube)

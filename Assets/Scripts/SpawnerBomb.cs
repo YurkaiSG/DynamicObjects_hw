@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -5,6 +6,10 @@ public class SpawnerBomb : Spawner
 {
     [SerializeField] private SpawnerCube _spawnerCube;
     private Vector3 _nextSpawnPosition;
+
+    public override event Action Spawned;
+    public override event Action Created;
+    public override event Action<int> Active;
 
     private void OnEnable()
     {
@@ -20,6 +25,7 @@ public class SpawnerBomb : Spawner
     {
         GameObject pooledObject = Instantiate(Prefab.gameObject);
         pooledObject.TryGetComponent(out Bomb bomb);
+        Created?.Invoke();
         return bomb;
     }
 
@@ -34,17 +40,21 @@ public class SpawnerBomb : Spawner
             bomb.ResetAlpha();
             StartCoroutine(Release(spawnedObject));
         }
+
+        Spawned?.Invoke();
+        Active?.Invoke(Pool.CountActive);
     }
 
     protected override IEnumerator Release(SpawnableObject spawnedObject)
     {
         if (spawnedObject.TryGetComponent(out Bomb bomb))
         {
-            yield return StartCoroutine(bomb.FadeOutSmoothly(Random.Range(bomb.MinFadeTimeValue, bomb.MaxFadeTimeValue)));
+            yield return StartCoroutine(bomb.FadeOutSmoothly(UnityEngine.Random.Range(bomb.MinFadeTimeValue, bomb.MaxFadeTimeValue)));
             bomb.Explode();
         }
 
         Pool.Release(spawnedObject);
+        Active?.Invoke(Pool.CountActive);
     }
 
     private void SpawnObject(Vector3 spawnPosition)

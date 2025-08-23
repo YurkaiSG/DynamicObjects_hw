@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -9,9 +8,6 @@ public class SpawnerCube : Spawner<Cube>
     private Bounds _bounds;
 
     public event Action<Vector3> Released;
-    public override event Action Spawned;
-    public override event Action Created;
-    public override event Action<int> Active;
 
     private void Awake()
     {
@@ -25,14 +21,6 @@ public class SpawnerCube : Spawner<Cube>
         InitiateSpawn();
     }
 
-    protected override Cube CreateFunc()
-    {
-        GameObject pooledObject = Instantiate(Prefab.gameObject);
-        pooledObject.TryGetComponent(out Cube cube);
-        Created?.Invoke();
-        return cube;
-    }
-
     protected override void ActionOnGet(Cube spawnedObject)
     {
         Vector3 spawnPosition = new Vector3(
@@ -40,29 +28,15 @@ public class SpawnerCube : Spawner<Cube>
             UnityEngine.Random.Range(_bounds.min.y, _bounds.max.y),
             UnityEngine.Random.Range(_bounds.min.z, _bounds.max.z));
 
-        spawnedObject.Collided += ReleaseOnCollide;
+        base.ActionOnGet(spawnedObject);
         spawnedObject.transform.position = spawnPosition;
-        spawnedObject.transform.rotation = Quaternion.identity;
-        spawnedObject.gameObject.SetActive(true);
-        Spawned?.Invoke();
-        Active?.Invoke(Pool.CountActive);
+        spawnedObject.Released += Release;
     }
 
     protected override void ActionOnRelease(Cube spawnedObject)
     {
-        base.ActionOnRelease(spawnedObject);
-        spawnedObject.Collided -= ReleaseOnCollide;
-        Active?.Invoke(Pool.CountActive);
-    }
-
-    private void ReleaseOnCollide(Cube cube)
-    {
-        StartCoroutine(Release(cube));
-    }
-
-    protected override IEnumerator Release(Cube spawnedObject)
-    {
-        yield return StartCoroutine(base.Release(spawnedObject));
+        spawnedObject.Released -= Release;
         Released?.Invoke(spawnedObject.transform.position);
+        base.ActionOnRelease(spawnedObject);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class Bomb : SpawnableObject
 
     public int MinFadeTimeValue => _minFadeTimeValue;
     public int MaxFadeTimeValue => _maxFadeTimeValue;
+    public event Action<Bomb> Released;
 
     private void Awake()
     {
@@ -30,6 +32,11 @@ public class Bomb : SpawnableObject
         _exploder.Explode();
     }
 
+    public void Release()
+    {
+        StartCoroutine(FadeOutSmoothly(UnityEngine.Random.Range(_minFadeTimeValue, _maxFadeTimeValue + 1)));
+    }
+
     public IEnumerator FadeOutSmoothly(float fadeTime)
     {
         WaitForSeconds waitInterval = new WaitForSeconds(_interval);
@@ -41,5 +48,10 @@ public class Bomb : SpawnableObject
             currentTime -= _interval;
             _colorChanger.ChangeAlpha(Renderer ,Mathf.InverseLerp(0f, fadeTime, currentTime));
         }
+
+        Explode();
+        RaiseReleasedEvent();
     }
+
+    private void RaiseReleasedEvent() => Released?.Invoke(this);
 }

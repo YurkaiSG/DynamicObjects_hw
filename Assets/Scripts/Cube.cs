@@ -1,15 +1,18 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(ColorChanger))]
 public class Cube : SpawnableObject
 {
     [SerializeField] private LayerMask _platformLayer;
+    [SerializeField] private int MinReleaseDelay = 2;
+    [SerializeField] private int MaxReleaseDelay = 5;
     private ColorChanger _colorChanger;
     private Color _baseColor;
     private bool _isCollided = false;
 
-    public event Action<Cube> Collided;
+    public event Action<Cube> Released;
 
     private void Awake()
     {
@@ -37,8 +40,17 @@ public class Cube : SpawnableObject
             {
                 _isCollided = true;
                 _colorChanger.Change(Renderer);
-                Collided?.Invoke(this);
+                StartCoroutine(ReleaseAfterDelay());
             }
         }
     }
+
+    private IEnumerator ReleaseAfterDelay()
+    {
+        WaitForSeconds delay = new WaitForSeconds(UnityEngine.Random.Range(MinReleaseDelay, MaxReleaseDelay + 1));
+        yield return delay;
+        RaiseReleasedEvent();
+    }
+
+    private void RaiseReleasedEvent() => Released?.Invoke(this);
 }

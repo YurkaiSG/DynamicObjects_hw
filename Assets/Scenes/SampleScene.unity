@@ -562,8 +562,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Prefab: {fileID: 6039836001802566200, guid: cad6c2ae06bd87e4d82db1ac971a934d, type: 3}
   SpawnDelay: 0.5
-  MinReleaseDelay: 2
-  MaxReleaseDelay: 5
   PoolCapacity: 30
   PoolMaxSize: 100
 --- !u!1 &705507993
@@ -691,8 +689,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Prefab: {fileID: 7191490033901681372, guid: a1604afd28ec23a4988e9cd2651c3cd0, type: 3}
   SpawnDelay: 0.5
-  MinReleaseDelay: 2
-  MaxReleaseDelay: 5
   PoolCapacity: 30
   PoolMaxSize: 100
   _spawnerCube: {fileID: 681748348}

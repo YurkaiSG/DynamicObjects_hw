@@ -7,15 +7,13 @@ public abstract class Spawner<T> : MonoBehaviour, ISpawner where T : SpawnableOb
 {
     [SerializeField] protected T Prefab;
     [SerializeField] protected float SpawnDelay = 0.5f;
-    [SerializeField] protected int MinReleaseDelay = 2;
-    [SerializeField] protected int MaxReleaseDelay = 5;
     [SerializeField] protected int PoolCapacity = 30;
     [SerializeField] protected int PoolMaxSize = 100;
     protected ObjectPool<T> Pool;
 
-    public abstract event Action Spawned;
-    public abstract event Action Created;
-    public abstract event Action<int> Active;
+    public event Action Spawned;
+    public event Action Created;
+    public event Action<int> Active;
 
     private void Awake()
     {
@@ -24,25 +22,24 @@ public abstract class Spawner<T> : MonoBehaviour, ISpawner where T : SpawnableOb
 
     protected virtual T CreateFunc()
     {
-        GameObject pooledObject = Instantiate(Prefab.gameObject);
-        pooledObject.TryGetComponent(out T spawnedObject);
+        T spawnedObject = Instantiate(Prefab);
+        Created?.Invoke();
         return spawnedObject;
     }
 
     protected virtual void ActionOnGet(T spawnedObject)
     {
-        spawnedObject.transform.position = transform.position;
-        spawnedObject.transform.rotation = Quaternion.identity;
+        spawnedObject.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
         spawnedObject.gameObject.SetActive(true);
-
-        StartCoroutine(Release(spawnedObject));
+        Spawned?.Invoke();
+        Active?.Invoke(Pool.CountActive);
     }
 
     protected virtual void ActionOnRelease(T spawnedObject)
     {
         spawnedObject.gameObject.SetActive(false);
-        spawnedObject.transform.rotation = Quaternion.identity;
         spawnedObject.Rigidbody.velocity = Vector3.zero;
+        Active?.Invoke(Pool.CountActive);
     }
 
     protected void Init()
@@ -72,12 +69,10 @@ public abstract class Spawner<T> : MonoBehaviour, ISpawner where T : SpawnableOb
             Pool.Get();
             yield return wait;
         }
-    }   
+    }  
 
-    protected virtual IEnumerator Release(T spawnedObject)
+    protected virtual void Release(T spawnedObject)
     {
-        WaitForSeconds delay = new WaitForSeconds(UnityEngine.Random.Range(MinReleaseDelay, MaxReleaseDelay + 1));
-        yield return delay;
         Pool.Release(spawnedObject);
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class SpawnerBomb : Spawner
+public class SpawnerBomb : Spawner<Bomb>
 {
     [SerializeField] private SpawnerCube _spawnerCube;
     private Vector3 _nextSpawnPosition;
@@ -21,7 +21,7 @@ public class SpawnerBomb : Spawner
         _spawnerCube.Released -= SpawnObject;
     }
 
-    protected override SpawnableObject CreateFunc()
+    protected override Bomb CreateFunc()
     {
         GameObject pooledObject = Instantiate(Prefab.gameObject);
         pooledObject.TryGetComponent(out Bomb bomb);
@@ -29,7 +29,7 @@ public class SpawnerBomb : Spawner
         return bomb;
     }
 
-    protected override void ActionOnGet(SpawnableObject spawnedObject)
+    protected override void ActionOnGet(Bomb spawnedObject)
     {
         spawnedObject.transform.position = _nextSpawnPosition;
         spawnedObject.transform.rotation = Quaternion.identity;
@@ -45,7 +45,7 @@ public class SpawnerBomb : Spawner
         Active?.Invoke(Pool.CountActive);
     }
 
-    protected override IEnumerator Release(SpawnableObject spawnedObject)
+    protected override IEnumerator Release(Bomb spawnedObject)
     {
         if (spawnedObject.TryGetComponent(out Bomb bomb))
         {

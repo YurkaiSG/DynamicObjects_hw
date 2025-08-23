@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class SpawnerCube : Spawner
+public class SpawnerCube : Spawner<Cube>
 {
     private Collider _collider;
     private Bounds _bounds;
@@ -25,7 +25,7 @@ public class SpawnerCube : Spawner
         InitiateSpawn();
     }
 
-    protected override SpawnableObject CreateFunc()
+    protected override Cube CreateFunc()
     {
         GameObject pooledObject = Instantiate(Prefab.gameObject);
         pooledObject.TryGetComponent(out Cube cube);
@@ -33,16 +33,14 @@ public class SpawnerCube : Spawner
         return cube;
     }
 
-    protected override void ActionOnGet(SpawnableObject spawnedObject)
+    protected override void ActionOnGet(Cube spawnedObject)
     {
         Vector3 spawnPosition = new Vector3(
             UnityEngine.Random.Range(_bounds.min.x, _bounds.max.x),
             UnityEngine.Random.Range(_bounds.min.y, _bounds.max.y),
             UnityEngine.Random.Range(_bounds.min.z, _bounds.max.z));
 
-        if (spawnedObject.TryGetComponent(out Cube cube))
-            cube.Collided += ReleaseOnCollide;
-
+        spawnedObject.Collided += ReleaseOnCollide;
         spawnedObject.transform.position = spawnPosition;
         spawnedObject.transform.rotation = Quaternion.identity;
         spawnedObject.gameObject.SetActive(true);
@@ -50,13 +48,10 @@ public class SpawnerCube : Spawner
         Active?.Invoke(Pool.CountActive);
     }
 
-    protected override void ActionOnRelease(SpawnableObject spawnedObject)
+    protected override void ActionOnRelease(Cube spawnedObject)
     {
         base.ActionOnRelease(spawnedObject);
-
-        if (spawnedObject.TryGetComponent(out Cube cube))
-            cube.Collided -= ReleaseOnCollide;
-
+        spawnedObject.Collided -= ReleaseOnCollide;
         Active?.Invoke(Pool.CountActive);
     }
 
@@ -65,7 +60,7 @@ public class SpawnerCube : Spawner
         StartCoroutine(Release(cube));
     }
 
-    protected override IEnumerator Release(SpawnableObject spawnedObject)
+    protected override IEnumerator Release(Cube spawnedObject)
     {
         yield return StartCoroutine(base.Release(spawnedObject));
         Released?.Invoke(spawnedObject.transform.position);

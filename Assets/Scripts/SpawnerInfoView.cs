@@ -1,12 +1,13 @@
 using TMPro;
 using UnityEngine;
 
-public class SpawnerInfoView : MonoBehaviour
+[RequireComponent(typeof(SpawnerReference))]
+public class SpawnerInfoView : MonoBehaviour 
 {
-    [SerializeField] private Spawner _spawner;
     [SerializeField] private TextMeshProUGUI _textSpawnedCount;
     [SerializeField] private TextMeshProUGUI _textCreatedCount;
     [SerializeField] private TextMeshProUGUI _textActiveCount;
+    private SpawnerReference _spawnerReference;
     private string _textSpawned = "Spawned: ";
     private string _textCreated = "Created: ";
     private string _textActive = "Active: ";
@@ -14,18 +15,23 @@ public class SpawnerInfoView : MonoBehaviour
     private int _createdCounter = 0;
     private int _activeCounter = 0;
 
+    private void Awake()
+    {
+        _spawnerReference = GetComponent<SpawnerReference>();
+    }
+
     private void OnEnable()
     {
-        _spawner.Spawned += ChangeSpawnedCounter;
-        _spawner.Created += ChangeCreatedCounter;
-        _spawner.Active += ChangeActiveCounter;
+        _spawnerReference.Spawner.Spawned += ChangeSpawnedCounter;
+        _spawnerReference.Spawner.Created += ChangeCreatedCounter;
+        _spawnerReference.Spawner.Active += ChangeActiveCounter;
     }
 
     private void OnDisable()
     {
-        _spawner.Spawned -= ChangeSpawnedCounter;
-        _spawner.Created -= ChangeCreatedCounter;
-        _spawner.Active -= ChangeActiveCounter;
+        _spawnerReference.Spawner.Spawned -= ChangeSpawnedCounter;
+        _spawnerReference.Spawner.Created -= ChangeCreatedCounter;
+        _spawnerReference.Spawner.Active -= ChangeActiveCounter;
     }
 
     private void ChangeSpawnedCounter()

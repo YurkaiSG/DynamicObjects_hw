@@ -3,15 +3,15 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public abstract class Spawner : MonoBehaviour
+public abstract class Spawner<T> : MonoBehaviour, ISpawner where T : SpawnableObject
 {
-    [SerializeField] protected SpawnableObject Prefab;
+    [SerializeField] protected T Prefab;
     [SerializeField] protected float SpawnDelay = 0.5f;
     [SerializeField] protected int MinReleaseDelay = 2;
     [SerializeField] protected int MaxReleaseDelay = 5;
     [SerializeField] protected int PoolCapacity = 30;
     [SerializeField] protected int PoolMaxSize = 100;
-    protected ObjectPool<SpawnableObject> Pool;
+    protected ObjectPool<T> Pool;
 
     public abstract event Action Spawned;
     public abstract event Action Created;
@@ -22,14 +22,14 @@ public abstract class Spawner : MonoBehaviour
         Init();
     }
 
-    protected virtual SpawnableObject CreateFunc()
+    protected virtual T CreateFunc()
     {
         GameObject pooledObject = Instantiate(Prefab.gameObject);
-        pooledObject.TryGetComponent(out SpawnableObject spawnedObject);
+        pooledObject.TryGetComponent(out T spawnedObject);
         return spawnedObject;
     }
 
-    protected virtual void ActionOnGet(SpawnableObject spawnedObject)
+    protected virtual void ActionOnGet(T spawnedObject)
     {
         spawnedObject.transform.position = transform.position;
         spawnedObject.transform.rotation = Quaternion.identity;
@@ -38,7 +38,7 @@ public abstract class Spawner : MonoBehaviour
         StartCoroutine(Release(spawnedObject));
     }
 
-    protected virtual void ActionOnRelease(SpawnableObject spawnedObject)
+    protected virtual void ActionOnRelease(T spawnedObject)
     {
         spawnedObject.gameObject.SetActive(false);
         spawnedObject.transform.rotation = Quaternion.identity;
@@ -47,7 +47,7 @@ public abstract class Spawner : MonoBehaviour
 
     protected void Init()
     {
-        Pool = new ObjectPool<SpawnableObject>(
+        Pool = new ObjectPool<T>(
             createFunc: () => CreateFunc(),
             actionOnGet: (obj) => ActionOnGet(obj),
             actionOnRelease: (obj) => ActionOnRelease(obj),
@@ -74,7 +74,7 @@ public abstract class Spawner : MonoBehaviour
         }
     }   
 
-    protected virtual IEnumerator Release(SpawnableObject spawnedObject)
+    protected virtual IEnumerator Release(T spawnedObject)
     {
         WaitForSeconds delay = new WaitForSeconds(UnityEngine.Random.Range(MinReleaseDelay, MaxReleaseDelay + 1));
         yield return delay;

@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(ColorChanger))]
 public class Cube : SpawnableObject
 {
+    [SerializeField] private LayerMask _platformLayer;
     private ColorChanger _colorChanger;
     private Color _baseColor;
     private bool _isCollided = false;
@@ -12,8 +13,7 @@ public class Cube : SpawnableObject
 
     private void Awake()
     {
-        Rigidbody = GetComponent<Rigidbody>();
-        Renderer = GetComponent<Renderer>();
+        Init();
         _colorChanger = GetComponent<ColorChanger>();
         _baseColor = Renderer.material.color;
         gameObject.SetActive(false);
@@ -31,7 +31,7 @@ public class Cube : SpawnableObject
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.TryGetComponent(out Cube _) == false && other.gameObject.TryGetComponent(out Bomb _) == false)
+        if ((_platformLayer.value & (1 << other.gameObject.layer)) > 0)
         {
             if (_isCollided == false)
             {

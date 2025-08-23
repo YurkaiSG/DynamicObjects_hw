@@ -15,8 +15,7 @@ public class Bomb : SpawnableObject
 
     private void Awake()
     {
-        Rigidbody = GetComponent<Rigidbody>();
-        Renderer = GetComponent<Renderer>();
+        Init();
         _exploder = GetComponent<Exploder>();
         _colorChanger = GetComponent<ColorChanger>();
     }

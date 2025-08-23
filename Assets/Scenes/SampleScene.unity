@@ -132,7 +132,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 502023905}
-  - component: {fileID: 502023907}
   - component: {fileID: 502023906}
   m_Layer: 5
   m_Name: CubeInfo
@@ -174,22 +173,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 502023904}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f8b4aa5f1e2c9449a0397907e1e6c4c, type: 3}
+  m_Script: {fileID: 11500000, guid: b095eac71e6f1234daa9fd9299726c97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnerMonoBehaviour: {fileID: 681748348}
---- !u!114 &502023907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 502023904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e33953fe7c6d55942b5d42dcd3beaaac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _spawner: {fileID: 681748348}
   _textSpawnedCount: {fileID: 1822112819}
   _textCreatedCount: {fileID: 1539796699}
   _textActiveCount: {fileID: 670818864}
@@ -733,7 +720,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 881898854}
-  - component: {fileID: 881898856}
   - component: {fileID: 881898855}
   m_Layer: 5
   m_Name: BombInfo
@@ -775,22 +761,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 881898853}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f8b4aa5f1e2c9449a0397907e1e6c4c, type: 3}
+  m_Script: {fileID: 11500000, guid: 720ca409483ec2b439942e80c61b7417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnerMonoBehaviour: {fileID: 868194851}
---- !u!114 &881898856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 881898853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e33953fe7c6d55942b5d42dcd3beaaac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _spawner: {fileID: 868194851}
   _textSpawnedCount: {fileID: 1552894297}
   _textCreatedCount: {fileID: 1223856898}
   _textActiveCount: {fileID: 2101166628}
@@ -1371,7 +1345,7 @@ GameObject:
   - component: {fileID: 1636943429}
   - component: {fileID: 1636943428}
   - component: {fileID: 1636943427}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: GroundPlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1900,7 +1874,7 @@ GameObject:
   - component: {fileID: 4581862477921811156}
   - component: {fileID: 2443079791649417317}
   - component: {fileID: 7568558478345430943}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AirPlatform 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1919,7 +1893,7 @@ GameObject:
   - component: {fileID: 2634845851442257767}
   - component: {fileID: 4242744695100935638}
   - component: {fileID: 8218570297642844716}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AirPlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
